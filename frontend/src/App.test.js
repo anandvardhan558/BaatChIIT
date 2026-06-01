@@ -1,8 +1,12 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import LandingPage from './pages/landing';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+jest.mock('react-router-dom', () => ({
+  Link: ({ children, to }) => <a href={to}>{children}</a>,
+  useNavigate: () => jest.fn(),
+}), { virtual: true });
+
+test('renders the landing page brand', () => {
+  render(<LandingPage />);
+  expect(screen.getAllByText(/BaatChIIT/i).length).toBeGreaterThan(0);
 });

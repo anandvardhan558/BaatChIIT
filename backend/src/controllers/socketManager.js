@@ -1,49 +1,111 @@
 import { Server } from "socket.io"
 
+const rooms = new Map();
+const messages = new Map();
+const socketToRoom = new Map();
 
-let connections = {}
-let messages = {}
-let timeOnline = {}
+const getRoom = (roomId) => {
+    if (!rooms.has(roomId)) {
+        rooms.set(roomId, new Map());
+    }
 
-export const connectToSocket = (server) => {
+    return rooms.get(roomId);
+}
+
+const getParticipantList = (roomId) => {
+    const room = rooms.get(roomId);
+    if (!room) return [];
+
+    return Array.from(room.values());
+}
+
+const emitParticipants = (io, roomId) => {
+    io.to(roomId).emit("participants-updated", getParticipantList(roomId));
+}
+
+const leaveRoom = (io, socket) => {
+    const roomId = socketToRoom.get(socket.id);
+    if (!roomId) return;
+
+    const room = rooms.get(roomId);
+    const participant = room?.get(socket.id);
+
+    if (room) {
+        room.delete(socket.id);
+        if (room.size === 0) {
+            rooms.delete(roomId);
+            messages.delete(roomId);
+        }
+    }
+
+    socket.leave(roomId);
+    socketToRoom.delete(socket.id);
+
+    socket.to(roomId).emit("user-left", socket.id, participant);
+    socket.to(roomId).emit("room-notification", {
+        type: "leave",
+        message: `${participant?.name || "A participant"} left the meeting`,
+        timestamp: Date.now()
+    });
+    emitParticipants(io, roomId);
+}
+
+export const connectToSocket = (server, allowedOrigins = []) => {
     const io = new Server(server, {
         cors: {
-            origin: "*",
+            origin(origin, callback) {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                }
+
+                return callback(new Error("Not allowed by CORS"));
+            },
             methods: ["GET", "POST"],
-            allowedHeaders: ["*"],
+            allowedHeaders: ["Content-Type", "Authorization"],
             credentials: true
-        }
+        },
+        pingTimeout: 30000,
+        pingInterval: 10000
     });
 
-
     io.on("connection", (socket) => {
+        socket.on("join-call", (payload) => {
+            const roomId = typeof payload === "string" ? payload : payload?.roomId;
+            const name = typeof payload === "string" ? "Guest" : payload?.name;
 
-        console.log("SOMETHING CONNECTED")
+            if (!roomId) return;
 
-        socket.on("join-call", (path) => {
+            leaveRoom(io, socket);
 
-            if (connections[path] === undefined) {
-                connections[path] = []
-            }
-            connections[path].push(socket.id)
+            const room = getRoom(roomId);
+            const participant = {
+                id: socket.id,
+                name: name?.trim() || "Guest",
+                joinedAt: Date.now(),
+                audioEnabled: true,
+                videoEnabled: true,
+                screenSharing: false,
+                connectionStatus: "connected",
+                isSpeaking: false
+            };
 
-            timeOnline[socket.id] = new Date();
+            room.set(socket.id, participant);
+            socketToRoom.set(socket.id, roomId);
+            socket.join(roomId);
 
-            // connections[path].forEach(elem => {
-            //     io.to(elem)
-            // })
+            const clients = Array.from(room.keys());
+            io.to(roomId).emit("user-joined", socket.id, clients, getParticipantList(roomId));
+            socket.to(roomId).emit("room-notification", {
+                type: "join",
+                message: `${participant.name} joined the meeting`,
+                timestamp: Date.now()
+            });
+            emitParticipants(io, roomId);
 
-            for (let a = 0; a < connections[path].length; a++) {
-                io.to(connections[path][a]).emit("user-joined", socket.id, connections[path])
-            }
-
-            if (messages[path] !== undefined) {
-                for (let a = 0; a < messages[path].length; ++a) {
-                    io.to(socket.id).emit("chat-message", messages[path][a]['data'],
-                        messages[path][a]['sender'], messages[path][a]['socket-id-sender'])
-                }
-            }
-
+            const roomMessages = messages.get(roomId) || [];
+            roomMessages.forEach((message) => {
+                socket.emit("chat-message", message.data, message.sender, message.senderId, message.timestamp);
+            });
         })
 
         socket.on("signal", (toId, message) => {
@@ -51,66 +113,56 @@ export const connectToSocket = (server) => {
         })
 
         socket.on("chat-message", (data, sender) => {
+            const roomId = socketToRoom.get(socket.id);
+            if (!roomId || !data?.trim()) return;
 
-            const [matchingRoom, found] = Object.entries(connections)
-                .reduce(([room, isFound], [roomKey, roomValue]) => {
+            const roomMessages = messages.get(roomId) || [];
+            const message = {
+                data: data.trim(),
+                sender: sender?.trim() || "Guest",
+                senderId: socket.id,
+                timestamp: Date.now()
+            };
 
+            roomMessages.push(message);
+            messages.set(roomId, roomMessages.slice(-100));
 
-                    if (!isFound && roomValue.includes(socket.id)) {
-                        return [roomKey, true];
-                    }
+            io.to(roomId).emit("chat-message", message.data, message.sender, message.senderId, message.timestamp);
+        })
 
-                    return [room, isFound];
+        socket.on("participant-media-state", (state = {}) => {
+            const roomId = socketToRoom.get(socket.id);
+            const room = rooms.get(roomId);
+            const participant = room?.get(socket.id);
+            if (!roomId || !participant) return;
 
-                }, ['', false]);
+            const updatedParticipant = {
+                ...participant,
+                audioEnabled: Boolean(state.audioEnabled),
+                videoEnabled: Boolean(state.videoEnabled),
+                screenSharing: Boolean(state.screenSharing)
+            };
 
-            if (found === true) {
-                if (messages[matchingRoom] === undefined) {
-                    messages[matchingRoom] = []
-                }
+            room.set(socket.id, updatedParticipant);
+            socket.to(roomId).emit("participant-media-state", socket.id, updatedParticipant);
+            emitParticipants(io, roomId);
+        })
 
-                messages[matchingRoom].push({ 'sender': sender, "data": data, "socket-id-sender": socket.id })
-                console.log("message", matchingRoom, ":", sender, data)
+        socket.on("speaker-state", (isSpeaking) => {
+            const roomId = socketToRoom.get(socket.id);
+            const room = rooms.get(roomId);
+            const participant = room?.get(socket.id);
+            if (!roomId || !participant || participant.isSpeaking === Boolean(isSpeaking)) return;
 
-                connections[matchingRoom].forEach((elem) => {
-                    io.to(elem).emit("chat-message", data, sender, socket.id)
-                })
-            }
-
+            const updatedParticipant = { ...participant, isSpeaking: Boolean(isSpeaking) };
+            room.set(socket.id, updatedParticipant);
+            socket.to(roomId).emit("speaker-state", socket.id, updatedParticipant.isSpeaking);
+            emitParticipants(io, roomId);
         })
 
         socket.on("disconnect", () => {
-
-            var diffTime = Math.abs(timeOnline[socket.id] - new Date())
-
-            var key
-
-            for (const [k, v] of JSON.parse(JSON.stringify(Object.entries(connections)))) {
-
-                for (let a = 0; a < v.length; ++a) {
-                    if (v[a] === socket.id) {
-                        key = k
-
-                        for (let a = 0; a < connections[key].length; ++a) {
-                            io.to(connections[key][a]).emit('user-left', socket.id)
-                        }
-
-                        var index = connections[key].indexOf(socket.id)
-
-                        connections[key].splice(index, 1)
-
-
-                        if (connections[key].length === 0) {
-                            delete connections[key]
-                        }
-                    }
-                }
-
-            }
-
-
+            leaveRoom(io, socket);
         })
-
     })
 
     return io;

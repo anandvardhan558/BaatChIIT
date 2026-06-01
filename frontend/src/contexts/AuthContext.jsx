@@ -1,6 +1,6 @@
 import axios from "axios";
 import httpStatus from "http-status";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import server from "../environment";
 
@@ -11,16 +11,27 @@ const client = axios.create({
     baseURL: `${server}/api/v1/users`
 })
 
+client.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 
 export const AuthProvider = ({ children }) => {
 
-    const authContext = useContext(AuthContext);
-
-
-    const [userData, setUserData] = useState(authContext);
+    const [userData, setUserData] = useState(null);
+    const [authLoading, setAuthLoading] = useState(true);
 
 
     const router = useNavigate();
+
+    const persistSession = (payload) => {
+        localStorage.setItem("token", payload.token);
+        setUserData(payload.user);
+    }
 
     const handleRegister = async (name, username, password) => {
         try {
@@ -32,7 +43,8 @@ export const AuthProvider = ({ children }) => {
 
 
             if (request.status === httpStatus.CREATED) {
-                return request.data.message;
+                persistSession(request.data);
+                return request.data;
             }
         } catch (err) {
             throw err;
@@ -46,25 +58,49 @@ export const AuthProvider = ({ children }) => {
                 password: password
             });
 
-            console.log(username, password)
-            console.log(request.data)
-
             if (request.status === httpStatus.OK) {
-                localStorage.setItem("token", request.data.token);
-                router("/home")
+                persistSession(request.data);
+                return request.data;
             }
         } catch (err) {
             throw err;
         }
     }
 
+    const verifySession = useCallback(async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setUserData(null);
+            setAuthLoading(false);
+            return false;
+        }
+
+        try {
+            const request = await client.get("/me");
+            setUserData(request.data.user);
+            setAuthLoading(false);
+            return true;
+        } catch (err) {
+            localStorage.removeItem("token");
+            setUserData(null);
+            setAuthLoading(false);
+            return false;
+        }
+    }, []);
+
+    useEffect(() => {
+        verifySession();
+    }, [verifySession]);
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        setUserData(null);
+        router("/auth");
+    }
+
     const getHistoryOfUser = async () => {
         try {
-            let request = await client.get("/get_all_activity", {
-                params: {
-                    token: localStorage.getItem("token")
-                }
-            });
+            let request = await client.get("/get_all_activity");
             return request.data
         } catch
          (err) {
@@ -75,7 +111,6 @@ export const AuthProvider = ({ children }) => {
     const addToUserHistory = async (meetingCode) => {
         try {
             let request = await client.post("/add_to_activity", {
-                token: localStorage.getItem("token"),
                 meeting_code: meetingCode
             });
             return request
@@ -86,7 +121,15 @@ export const AuthProvider = ({ children }) => {
 
 
     const data = {
-        userData, setUserData, addToUserHistory, getHistoryOfUser, handleRegister, handleLogin
+        userData,
+        setUserData,
+        authLoading,
+        verifySession,
+        logout,
+        addToUserHistory,
+        getHistoryOfUser,
+        handleRegister,
+        handleLogin
     }
 
     return (

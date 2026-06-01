@@ -1,133 +1,476 @@
 .App {
-  text-align: center;
+  min-height: 100vh;
+  color: #0f172a;
+  background: #f8fafc;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.appLoading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: #475569;
+  background: #f8fafc;
+  font-size: 1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.authLoading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  color: #475569;
+  background: #f8fafc;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;.landingPageContainer {
-  width: 100vw;
-  height: 100vh;
-  background: url("/public/background.png");
+.authPage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(340px, 1fr) minmax(360px, 520px);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .18), transparent 26%),
+    linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.authBrandPanel {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: clamp(28px, 5vw, 64px);
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, .92), rgba(37, 99, 235, .68)),
+    url("../public/background.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.brandMark,
+.authHighlights,
+.authHighlights div {
+  display: flex;
+  align-items: center;
+}
+
+.brandMark {
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.brandMark svg {
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .14);
+}
+
+.authWelcome {
+  max-width: 740px;
+}
+
+.authWelcome h1 {
+  margin: 20px 0;
+  max-width: 760px;
+  font-size: clamp(3rem, 7vw, 6.8rem);
+  line-height: .94;
+  letter-spacing: 0;
+}
+
+.authWelcome p {
+  max-width: 640px;
+  color: rgba(255, 255, 255, .82);
+  font-size: 1.08rem;
+  line-height: 1.7;
+}
+
+.authHighlights {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.authHighlights div {
+  gap: 9px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  backdrop-filter: blur(12px);
+  font-weight: 700;
+}
+
+.authCardShell {
+  display: grid;
+  place-items: center;
+  padding: clamp(18px, 4vw, 48px);
+}
+
+.authCard {
+  width: min(100%, 430px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(22px, 4vw, 34px);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, .14);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.authCard:focus-within {
+  box-shadow: 0 28px 90px rgba(37, 99, 235, .18);
+}
+
+.authCardHeader p {
+  color: #2563eb;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.authCardHeader h2 {
+  margin: 6px 0;
+  font-size: clamp(1.8rem, 4vw, 2.45rem);
+  letter-spacing: 0;
+}
+
+.authCardHeader span {
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.authTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.authTabs button,
+.textButton {
+  border: 0;
+  background: transparent;
+  color: #475569;
+  font: inherit;
+  cursor: pointer;
+}
+
+.authTabs button {
+  min-height: 42px;
+  border-radius: 10px;
+  font-weight: 800;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.authTabs button.active {
+  color: #0f172a;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .08);
+}
+
+.authSubmit {
+  min-height: 48px;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, .22) !important;
+}
+
+.textButton {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.landingPageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(15, 23, 42, .88), rgba(37, 99, 235, .46)), url("../public/background.png");
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
   color: white;
 }
 
 .landingPageContainer nav {
-  padding-inline: 1.2rem;
-  padding-block: 1.6rem;
+  min-height: 76px;
+  padding-inline: clamp(1rem, 4vw, 3rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
-
 }
 
 .landingPageContainer nav h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
 .landingPageContainer nav .navlist {
   display: flex;
-  gap: 1.6rem;
+  align-items: center;
+  gap: clamp(.75rem, 2vw, 1.6rem);
   cursor: pointer;
+}
 
+.landingPageContainer nav .navlist p,
+.landingPageContainer nav .navlist div {
+  color: rgba(255, 255, 255, .9);
+}
+
+.landingPageContainer nav .navlist div {
+  padding: .6rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .14);
 }
 
 .landingMainContainer {
-  display: flex;
-  justify-content: space-between;
-  padding-inline: 3rem;
-  height: 80vh;
+  display: grid;
+  grid-template-columns: minmax(280px, 620px) minmax(220px, 1fr);
+  gap: 32px;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+  min-height: calc(100vh - 76px);
   align-items: center;
 }
 
-.landingMainContainer>div:nth-child(1) {
-  font-size: 2.2rem;
+.landingMainContainer h1 {
+  font-size: clamp(3.2rem, 9vw, 8rem);
+  line-height: .92;
+  letter-spacing: 0;
+  margin-bottom: 1.25rem;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] {
-  background: #D97500;
+.landingMainContainer p {
+  max-width: 620px;
+  color: rgba(255, 255, 255, .86);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  line-height: 1.55;
+}
+
+.landingMainContainer div[role='button'] {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  background: #2563eb;
   width: fit-content;
-  padding: 1rem;
-  border-radius: 20px;
+  padding: .95rem 1.2rem;
+  border-radius: 8px;
   margin-top: 1.9rem;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] a {
+.landingMainContainer div[role='button'] a {
   text-decoration: none;
   color: white;
-  font-size: 1.7rem;
+  font-size: 1rem;
+  font-weight: 800;
 }
 
-.landingMainContainer>div:nth-child(2) img {
-  height: 70vh;
-  width: auto;
-}
-
-.navBar {
+.landingMainContainer > div:nth-child(2) {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-inline: 20px;
-  text-align: center;
-
-}
-.meetContainer {
-  display: flex;
-  padding-inline: 20px;
-  height: 80vh;
-  gap: 10vw;
   justify-content: center;
 }
 
+.landingMainContainer > div:nth-child(2) img {
+  max-height: 74vh;
+  max-width: 100%;
+  width: auto;
+  filter: drop-shadow(0 24px 50px rgba(0, 0, 0, .28));
+}
 
-
-.leftPanel {
-  height: 100%;
+.navBar {
+  min-height: 72px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(12px);
+}
 
+.navBar h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.navLabel {
+  color: #475569;
+  margin-right: .35rem;
+}
+
+.meetContainer {
+  display: grid;
+  grid-template-columns: minmax(280px, 620px) minmax(260px, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  min-height: calc(100vh - 72px);
+  padding: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.leftPanel {
+  display: flex;
+  align-items: center;
+}
+
+.leftPanel h1 {
+  max-width: 680px;
+  font-size: clamp(2.4rem, 6vw, 5.8rem);
+  line-height: .98;
+  letter-spacing: 0;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  color: #2563eb;
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  margin-bottom: 1rem;
+}
+
+.homeCopy {
+  max-width: 560px;
+  color: #475569;
+  font-size: 1.08rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.joinControls {
+  display: grid;
+  grid-template-columns: minmax(180px, 320px) auto;
+  gap: 12px;
+  align-items: center;
 }
 
 .rightPanel {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .rightPanel > img {
-  width: 30vw;
+  max-width: min(460px, 100%);
   height: auto;
-  border-radius: 20px;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, .18);
 }
+
+.historyPage {
+  min-height: 100vh;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background:
+    radial-gradient(circle at 5% 5%, rgba(37, 99, 235, .1), transparent 25%),
+    #f8fafc;
+}
+
+.historyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.historyHeader {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
 }
 
-.App-link {
-  color: #61dafb;
+.historyCard {
+  border-radius: 14px !important;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.historyCard:hover {
+  transform: translateY(-2px);
+  border-color: #bfdbfe;
+  box-shadow: 0 16px 42px rgba(15, 23, 42, .1);
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 320px;
+  padding: 32px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .7);
+  text-align: center;
+}
+
+.emptyState svg {
+  width: 48px;
+  height: 48px;
+  color: #2563eb;
+}
+
+.emptyState h2 {
+  font-size: 1.6rem;
+}
+
+.emptyState p {
+  color: #64748b;
+}
+
+@media (max-width: 760px) {
+  .landingPageContainer nav {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-block: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .landingMainContainer,
+  .meetContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .landingMainContainer > div:nth-child(2) {
+    display: none;
+  }
+
+  .navBar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-block: 1rem;
+  }
+
+  .joinControls {
+    grid-template-columns: 1fr;
+  }
+
+  .authPage {
+    grid-template-columns: 1fr;
+  }
+
+  .authBrandPanel {
+    min-height: auto;
+    gap: 28px;
+  }
+
+  .authWelcome h1 {
+    font-size: clamp(2.5rem, 13vw, 4.3rem);
+  }
+}
+
+@media (max-width: 520px) {
+  .authCardShell {
+    padding: 14px;
+  }
+
+  .authCard {
+    border-radius: 14px;
+  }
+
+  .authHighlights {
+    display: none;
   }
 }
