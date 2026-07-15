@@ -107,27 +107,26 @@ BaatChIIT
 ---
 
 ## Screenshots
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 11 58 44 AM" src="https://github.com/user-attachments/assets/0dcf0bc8-7764-4d25-a628-eb14ae0ac16b" />
 
 ### Login & Registration
 
-*Add screenshot here*
-
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 11 59 06 AM" src="https://github.com/user-attachments/assets/20b0cae3-4aa8-4eaf-9f59-fff1c7b99571" />
 ### Meeting Lobby
 
-*Add screenshot here*
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 11 59 06 AM" src="https://github.com/user-attachments/assets/3101626a-521a-4887-b4c9-b14ac5c973e0" />
+
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 12 04 38 PM" src="https://github.com/user-attachments/assets/571b9df1-4025-478a-8f45-1479486e19c6" />
 
 ### Video Conference Room
 
-*Add screenshot here*
-
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 12 11 10 PM" src="https://github.com/user-attachments/assets/93439ba1-b6b2-420b-9342-55d2e68b591e" />
 ### Chat & Participants Panel
 
-*Add screenshot here*
-
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 12 12 04 PM" src="https://github.com/user-attachments/assets/74caa266-c1dc-471c-a62a-a1beebdda5b9" />
 ### Meeting History
 
-*Add screenshot here*
-
+<img width="1470" height="956" alt="Screenshot 2026-07-15 at 12 00 40 PM" src="https://github.com/user-attachments/assets/31f1d2b7-75d8-4d99-ba1f-0dba42ddc23a" />
 ---
 
 ## Future Improvements
