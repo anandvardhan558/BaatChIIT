@@ -39,7 +39,7 @@ MONGO_URI=your_mongodb_connection_string
 
 JWT_SECRET=your_secret_key
 
-JWT_EXPIRES_IN_SECONDS=604800
+JWT_EXPIRES_IN_SECONDS= *******
 
 CLIENT_URLS=http://localhost:3000
 ```
@@ -89,10 +89,7 @@ POST /api/v1/users/add_to_activity
 
 ## Deployment
 
-Backend is designed to be deployed on platforms such as:
-
 * Render
-* Railway
 
 Database:
 
