@@ -72,32 +72,6 @@ http://localhost:3000
 npm run build
 ```
 
----
-
-## Screenshots
-
-### Login Page
-
-*Add screenshot here*
-
-### Meeting Lobby
-
-*Add screenshot here*
-
-### Video Conference Room
-
-*Add screenshot here*
-
-### Chat Panel
-
-*Add screenshot here*
-
-### Meeting History
-
-*Add screenshot here*
-
----
-
 ## Author
 
 Anand Vardhan
